@@ -1,18 +1,6 @@
 const canvas = document.getElementById("myCanvas");
 canvas.width = window.innerWidth;
-
-const ctx = canvas.getContext("2d");
-const car = new Car(100, 100, 30, 50);
-
-animate();
-
-function animate() {
-  car.update();
-
-  canvas.height = window.innerHeight;
-  car.draw(ctx);
-  requestAnimationFrame(animate);
-}
+canvas.height = window.innerHeight;
 class Car {
   constructor(x, y, width, height) {
     this.x = x;
@@ -21,9 +9,9 @@ class Car {
     this.height = height;
 
     this.speed = 0;
-    this.acceleration = 10;
+    this.acceleration = 0.5; 
     this.maxSpeed = 15;
-    this.friction = 0.03;
+    this.friction = 0.05;
     this.angle = 0;
 
     this.controls = new Controls();
@@ -58,7 +46,7 @@ class Car {
       this.speed = 0;
     }
 
-    if (this.speed != 0) {
+    if (this.speed !== 0) {
       const flip = this.speed > 0 ? 1 : -1;
       if (this.controls.left) {
         this.angle += 0.03 * flip;
@@ -71,7 +59,6 @@ class Car {
     this.x -= Math.sin(this.angle) * this.speed;
     this.y -= Math.cos(this.angle) * this.speed;
 
-    // Boundary checks to keep the car within the canvas
     this.x = Math.max(
       this.width / 2,
       Math.min(canvas.width - this.width / 2, this.x)
@@ -94,6 +81,7 @@ class Car {
     ctx.restore();
   }
 }
+
 class Controls {
   constructor() {
     this.forward = false;
@@ -155,4 +143,23 @@ class Controls {
       }
     };
   }
+}
+
+const ctx = canvas.getContext("2d");
+const car = new Car(100, 100, 30, 50);
+
+window.addEventListener("resize", () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+animate();
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  car.update();
+  car.draw(ctx);
+
+  requestAnimationFrame(animate);
 }
